@@ -12,6 +12,10 @@
         />
       </mat-form-field>
 
+      <mat-error *ngIf="email.errors?.required">The email is mandatory.</mat-error>
+      <mat-error *ngIf="email.errors?.minlength">Your email must have minimum {{email.errors?.minlength.requiredLength}} chars, but it only has {{email.errors?.minlength.actualLength}}.</mat-error>
+      <mat-error *ngIf="email.errors?.email">This is not a valid email.</mat-error>
+
       <mat-form-field>
         <input
           matInput
@@ -21,7 +25,8 @@
         />
       </mat-form-field>
 
-      <button mat-raised-button color="primary">Login</button>
+      <button mat-raised-button color="primary" [disabled]="!form.valid" (click)="login()">Login</button>
+      <button mat-raised-button (click)="reset()">reset</button>
     </form>
 
     <div class="form-val">
