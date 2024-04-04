@@ -12,10 +12,33 @@
     </mat-form-field>
 
     <mat-form-field>
+      <mat-select placeholder="Select category" formControlName="category">
+          @for (category of  courseCategories$ | async ; track category.id) {
+              <mat-option [value]="category.code">
+                  {{category.description}}
+              </mat-option>
+          }
+
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
       <input matInput [matDatepicker]="releaseDatePicker" placeholder="Release date" formControlName="releasedAt">
 
       <mat-datepicker-toggle matSuffix [for]="releaseDatePicker"></mat-datepicker-toggle>
 
       <mat-datepicker #releaseDatePicker></mat-datepicker>
     </mat-form-field>
+
+
+    <mat-checkbox color="primary" formControlName="downloadsAllowed">Checkbox label</mat-checkbox>
+
+    <mat-form-field appearance="outline">
+      <textarea matInput placeholder="Description" formControlName="longDescription">
+      </textarea>
+    </mat-form-field>
+
+    <div class="form-val">
+      {{ form.value | json }}
+    </div>
 </div>
