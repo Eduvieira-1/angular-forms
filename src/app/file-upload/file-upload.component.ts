@@ -7,6 +7,7 @@ import {
   ControlValueAccessor,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
+  ValidationErrors,
   Validator,
 } from "@angular/forms";
 import { noop, of } from "rxjs";
@@ -20,10 +21,15 @@ import { noop, of } from "rxjs";
       provide: NG_VALUE_ACCESSOR,
       multi: true,
       useExisting: FileUploadComponent
+    },
+    {
+      provide: NG_VALIDATORS,
+      multi: true,
+      useExisting: FileUploadComponent
     }
   ]
 })
-export class FileUploadComponent implements ControlValueAccessor{
+export class FileUploadComponent implements ControlValueAccessor, Validator{
   @Input()
   requiredFileType: string;
 
@@ -31,10 +37,13 @@ export class FileUploadComponent implements ControlValueAccessor{
 
   fileUploadError = false;
 
+  fileUploadSuccess = false;
+
   uploadProgress: number;
 
   onChange = (fileName: string) => {};
   onTouched = () => {};
+  onValidatorChange = () => {}
   disabled: boolean = false;
 
   constructor(private http: HttpClient){
@@ -77,7 +86,9 @@ export class FileUploadComponent implements ControlValueAccessor{
         if(event.type == HttpEventType.UploadProgress){
           this.uploadProgress = Math.round(100 * (event.loaded / event.total))
         } else if(event.type == HttpEventType.Response){
+          this.fileUploadSuccess = true;
           this.onChange(this.fileName);
+          this.onValidatorChange();
         }
       });
     }
@@ -85,20 +96,48 @@ export class FileUploadComponent implements ControlValueAccessor{
     event.target.value = ''
   }
 
+  //usado para atualizar o valor de um controle de formulário personalizado. Quando esse método é chamado, o novo valor é passado como argumento.
+  // O writeValue é responsável por sincronizar o valor interno do controle de formulário personalizado com o valor do controle de formulário Angular correspondente.
   writeValue(value: any){
     this.fileName = value;
   }
 
+  //vc retorna um valor para o pai
   registerOnChange(onChange: any) {
     this.onChange = onChange;
   }
 
+  //retorna se o campo já foi sujado ou nao
   registerOnTouched(onTouched: any) {
     this.onTouched = onTouched;
   }
 
+  //pode habilitar e desabilitar o campo
   setDisabledState(disabled: boolean) {
     this.disabled = disabled;
+  }
+
+  //valida os campos aplicados
+  registerOnValidatorChange(onValidatorChange: () => void) {
+    this.onValidatorChange = onValidatorChange;
+  }
+
+  //validação do meu file-upload
+  validate(control: AbstractControl): ValidationErrors | null {
+
+    if(this.fileUploadSuccess){
+      return null;
+    }
+
+    let errors: any = {
+      requiredFileType: this.requiredFileType
+    }
+
+    if(this.fileUploadError){
+      errors.uploadFailed = true;
+    }
+
+    return errors;
   }
 
 }
