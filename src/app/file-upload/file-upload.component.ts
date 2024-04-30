@@ -15,6 +15,13 @@ import { noop, of } from "rxjs";
   selector: "file-upload",
   templateUrl: "file-upload.component.html",
   styleUrls: ["file-upload.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: FileUploadComponent
+    }
+  ]
 })
 export class FileUploadComponent implements ControlValueAccessor{
   @Input()
