@@ -21,11 +21,6 @@ import { noop, of } from "rxjs";
       provide: NG_VALUE_ACCESSOR,
       multi: true,
       useExisting: FileUploadComponent
-    },
-    {
-      provide: NG_VALIDATORS,
-      multi: true,
-      useExisting: FileUploadComponent
     }
   ]
 })
@@ -103,6 +98,7 @@ export class FileUploadComponent implements ControlValueAccessor, Validator{
   }
 
   //vc retorna um valor para o pai
+  //Além disso, quando queremos reportar um novo valor do formulário de volta ao formulário pai usando o retorno de chamada Onchange,
   registerOnChange(onChange: any) {
     this.onChange = onChange;
   }
